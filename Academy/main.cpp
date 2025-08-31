@@ -244,9 +244,46 @@ public:
 		return os << subject;
 	}
 };
+void Print(Human* group[], const int n)
+{
+	cout << typeid(group).name() << endl;
+	for (int i = 0; i < n; i++)
+	{
+		//group[i]->info();
+		cout << *group[i] << endl;
+		
+		//cout << delimeter << endl;
+	};
+	cout << "Количество людей: " << group[0]->get_count() << endl;
+	
+}
+void Save(Human** group, char filename[])
+{
+	std::ofstream fout(filename);
+	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
+	{
+		//group[i]->info();
+		
+		fout << *group[i] << endl;
+		cout << delimeter << endl;
+	};
+	fout.close();
+	char cmd[FILENAME_MAX] = "notepad ";
+	strcat(cmd, filename);
+	system(cmd);
+}
+
+void Clear(Human** group, const int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		delete group[i];
+	};
+	cout << "Количество людей: " << Human::get_count() << endl;
+}
 
 //#define INHERITANCE
-#define POLYMORPHISM
+//#define POLYMORPHISM
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -266,6 +303,7 @@ void main()
 	graduate.info();
 #endif // INHERITANCE
 
+#ifdef POLYMORPHISM
 	Human* group[] =
 	{
 
@@ -298,4 +336,23 @@ void main()
 		delete group[i];
 	};
 	cout << "Количество людей: " << Human::get_count() << endl;
+#endif // POLYMORPHISM
+
+
+	Human* group[] =
+	{
+
+		new Human("Montana", "Antonio", 25),
+		new Student("Pinkman", "Jessie", 22, "Chemistry", "WW_220", 95, 99),
+		new Teacher("White", "Walter", 50, "Chemistry", 25),
+		new Graduate("Schreder", "Hank", 40, "Criminalistic", "WW_220", 40, 60, "How to catch Heisenberg"),
+		new Student("Vercety", "Tommy", 30, "Theft", "Vice", 98,99),
+		new Teacher("Diaz", "Ricardo", 50, "Weapon distribution", 20),
+		new Graduate("Targarien", "Daineris", 22 ,"Flight", "GoT", 91, 92 , "How to make smoke"),
+		new Teacher("Schwartzneger", "Arnold", 85, "Heavy Metal", 60)
+
+	};
+	cout << typeid(group).name()<< endl;
+	Print(group, sizeof(group)/sizeof(group[0]));
+	Clear(group, sizeof(group) / sizeof(group[0]));
 }

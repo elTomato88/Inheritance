@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 //using namespace std;
 using std::cin;
 using std::cout;
@@ -8,6 +10,7 @@ using std::endl;
 #define HUMAN_GIVE_PARAMETRES last_name, first_name, age
 class Human
 {
+	static const int TYPE_WIDTH = 10;
 	static const int LAST_NAME_WIDTH = 22;
 	static const int FIRST_NAME_WIDTH = 22;
 	static const int AGE_WIDTH = 3;
@@ -65,9 +68,12 @@ public:
 
 	virtual std::ostream& info(std::ostream& os)const
 	{
+		os.width(TYPE_WIDTH);
+		os << std::left; // width выдает вывод по правому краю, поэтому лефт
+		//os <<strchr(typeid(*this).name(), ' ')+1 << ":"; // ищем пробел и +1
+		os << std::string(typeid(*this).name() + 6) + ":";
 		//return os << last_name << " " << first_name << " " << age;
 		os.width(LAST_NAME_WIDTH); // вывод по таблице
-		os << std::left; // width выдает вывод по правому краю, поэтому лефт
 		os << last_name;
 		os.width(FIRST_NAME_WIDTH);
 		os << first_name;
@@ -273,12 +279,19 @@ void main()
 		new Teacher("Schwartzneger", "Arnold", 85, "Heavy Metal", 60)
 
 	};
+	char filename[] = "group.txt";
+	std::ofstream fout(filename);
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
 		//group[i]->info();
 		cout << *group[i] << endl;
+		fout << *group[i] << endl;
 		cout << delimeter << endl;
 	};
+	fout.close();
+	char cmd[FILENAME_MAX] = "notepad ";
+	strcat(cmd, filename);
+	system(cmd);
 	cout << "Количество людей: " << group[0]->get_count() << endl;
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{

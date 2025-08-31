@@ -8,10 +8,18 @@ using std::endl;
 #define HUMAN_GIVE_PARAMETRES last_name, first_name, age
 class Human
 {
+	static const int LAST_NAME_WIDTH = 22;
+	static const int FIRST_NAME_WIDTH = 22;
+	static const int AGE_WIDTH = 3;
+	static int count;
 	std::string last_name;
 	std::string first_name;
 	int age;
 public:
+	static int get_count()
+	{
+		return count;
+	}
 	const std::string& get_last_name()const
 	{
 		return last_name;
@@ -44,23 +52,46 @@ public:
 		set_last_name(last_name);
 		set_first_name(first_name);
 		set_age(age);
+		count++;
 		cout << "HConstructor: \t" << this << endl;
+
 	}
 	virtual ~Human()
 	{
+		count--;
 		cout << "HDestructor:\t" << this << endl;
 	}
 	// methods
 
-	virtual void info()const
+	virtual std::ostream& info(std::ostream& os)const
 	{
-		cout << last_name << " " << first_name << " " << age << endl;
+		//return os << last_name << " " << first_name << " " << age;
+		os.width(LAST_NAME_WIDTH); // вывод по таблице
+		os << std::left; // width выдает вывод по правому краю, поэтому лефт
+		os << last_name;
+		os.width(FIRST_NAME_WIDTH);
+		os << first_name;
+		os.width(AGE_WIDTH);
+		os << age;
+		return os;
 	}
 };
+//static member definition:
+int Human::count = 0;// Статические переменные нельзя проиниц. внутри класса
+std::ostream& operator<<(std::ostream& os, const Human& obj)
+{
+	return obj.info(os);
+	//return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age();
+}
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
+
+
 class Student :public Human
 {
+	static const int SPECIALITY_WIDTH = 22;
+	static const int GROUP_WIDTH = 8;
+	static const int RATING_WIDTH = 5;
 	std::string speciality;
 	std::string group;
 	double rating;
@@ -116,16 +147,28 @@ public:
 		cout << "SDestructor:\t" << this << endl;
 	}
 	//methods
-	void info() const override
+	std::ostream& info(std::ostream& os) const override
 	{
-		Human::info();
-		cout << speciality << " " << group << " " << rating << " " << attendance << endl;
+		Human::info(os);
+		os.width(SPECIALITY_WIDTH);
+		os << speciality;
+		os.width(GROUP_WIDTH);
+		os << group;
+		os.width(RATING_WIDTH);
+		os << rating;
+		os.width(RATING_WIDTH);
+		os << attendance;
+		return os;
+		//Human::info(os)<< " ";
+		//return os << speciality << " " << group << " " << rating << " " << attendance;
 	}
 };
 #define TEACHER_TAKE_PARAMETERS const std::string& speciality, int experience
 #define TEACHER_GIVE_PARAMETERS const speciality, experience
 class Teacher :public Human
 {
+	static const int SPECIALITY_WIDTH = 22;
+	static const int EXPERIENCE_WIDTH = 3;
 	std::string speciality;
 	int experience;
 public:
@@ -161,12 +204,20 @@ public:
 		cout << "TDestructor:\t" << this << endl;
 	}
 	// methods
-	void info() const override
+	std::ostream& info(std::ostream& os) const override
 	{
-		Human::info();
-		cout << speciality << " " << experience << endl;
+		Human::info(os);
+		os.width(SPECIALITY_WIDTH);
+		os << speciality;
+		os.width(EXPERIENCE_WIDTH);
+		os << experience;
+		return os;
+		
+		//Human::info(os) <<" ";
+		//return os << speciality << " " << experience;
 	}
 };
+
 class Graduate :public Student
 {
 	std::string subject;
@@ -181,16 +232,18 @@ public:
 	{
 		cout << "GDestructor\t"<< this << endl;
 	}
-	void info() const override
+	std::ostream& info(std::ostream& os) const override
 	{
-		Student::info();
-		cout << subject << endl;
+		Student::info(os)<<" ";
+		return os << subject;
 	}
 };
+
 //#define INHERITANCE
 #define POLYMORPHISM
 void main()
 {
+	setlocale(LC_ALL, "");
 #ifdef INHERITANCE
 
 	setlocale(LC_ALL, "");
@@ -209,21 +262,27 @@ void main()
 
 	Human* group[] =
 	{
-		
+
 		new Human("Montana", "Antonio", 25),
 		new Student("Pinkman", "Jessie", 22, "Chemistry", "WW_220", 95, 99),
 		new Teacher("White", "Walter", 50, "Chemistry", 25),
 		new Graduate("Schreder", "Hank", 40, "Criminalistic", "WW_220", 40, 60, "How to catch Heisenberg"),
 		new Student("Vercety", "Tommy", 30, "Theft", "Vice", 98,99),
-		new Teacher("Diaz", "Ricardo", 50, "Weapon distribution", 20)
+		new Teacher("Diaz", "Ricardo", 50, "Weapon distribution", 20),
+		new Graduate("Targarien", "Daineris", 22 ,"Flight", "GoT", 91, 92 , "How to make smoke"),
+		new Teacher("Schwartzneger", "Arnold", 85, "Heavy Metal", 60)
+
 	};
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
-		group[i]->info();
+		//group[i]->info();
+		cout << *group[i] << endl;
 		cout << delimeter << endl;
 	};
+	cout << "Количество людей: " << group[0]->get_count() << endl;
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
 		delete group[i];
 	};
+	cout << "Количество людей: " << Human::get_count() << endl;
 }
